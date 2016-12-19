@@ -7,6 +7,7 @@
 (defconstant +spec-max-y+ 5)
 (defconstant +spec-max-xy+ (* +spec-max-x+ +spec-max-y+))
 (defconstant +spec-max-pre-xy+ (- +spec-max-xy+ 1))
+(defconstant +spec-character-max+ (* +spec-max-y+ 16))
 
 ;; Character Color Attributes
 (defvar +black+ (make-array '(3)))
@@ -123,17 +124,6 @@
   (:cardinal cardinal)
   (cartesian (:array :unsigned-short 2)))
 
-;;(make-array size :element-type '(unsigned-byte 8) :allocation :static-reclaimable))
-
-;;int func123(div_t * x,int **z[100],int y[][1000][10]);
-
-;;(:arguments (x (ffi:c-pointer div_t))
-;;(z (ffi:c-ptr (ffi:c-array (ffi:c-ptr (ffi:c-ptr ffi:int)) 100)))
-;;(y (ffi:c-ptr (ffi:c-ptr (ffi:c-array ffi:int (1000 10))))))
-
-;; unsigned short cartesian[2]; 
-;; (cffi:cffi-array '(2) :element-type 'unsigned-short)))
-
 ;; Neko's Texels Definition
 (cffi:defcstruct _tuple_
   (:part part)
@@ -142,19 +132,17 @@
 ;; Display screen's Characters
 (cffi:defcstruct _character_
   (attribute :unsigned-char)
-  (foreground :unsigned-char) ;; unsigned char foreground[3];
-  (background :unsigned-char) ;; unsigned char background[3];
+  (foreground (:array :unsigned-char 3))
+  (background (:array :unsigned-char 3))
   (glyph :int))
 
 (cffi:defcstruct _library-state_
   (:sheet sheet)
-;;  (:)
+  (emotion (:array (:array (:pointer (:struct _tuple_)) 50) 16))
+ ;;;;; (emotion (:array (:array (:pointer (:struct _tuple_)) +spec-max-xy+) +spec-max-draw+))
   (:pointer (:struct _position_))
-;;  (:)
+  (message (:array (:struct _character_) 80))
+ ;;;;; (message (:array (:struct _character_) +spec-character-max+))
   (unmount :unsigned-char))
 
-;Unitary test for library-state
-;(cffi:with-foreign-object (ptr '(:struct library-state))
-;  (print (cffi:foreign-slot-pointer ptr '(:struct library-state) :sheet)))
-
-(sb-ext:exit)
+;;(sb-ext:exit)
