@@ -1,98 +1,142 @@
 
 (asdf:load-system :cffi)
 
+;; Constants
 (defconstant +spec-max-draw+ 16)
 (defconstant +spec-max-x+ 10)
 (defconstant +spec-max-y+ 5)
 (defconstant +spec-max-xy+ (* +spec-max-x+ +spec-max-y+))
 (defconstant +spec-max-pre-xy+ (- +spec-max-xy+ 1))
 
-(defconstant +upper-left+ 0)
-(defconstant +upper-middle+ 1)
-(defconstant +upper-right+ 2)
-(defconstant +middle-left+ 3)
-(defconstant +middle-central+ 4)
-(defconstant +middle-right+ 5)
-(defconstant +lower-left+ 6)
-(defconstant +lower-middle+ 7)
-(defconstant +lower-right+ 8)
+;; Character Color Attributes
+(defvar +black+ (make-array '(3)))
+(setf (aref +black+ 0) 0)
+(setf (aref +black+ 1) 0)
+(setf (aref +black+ 2) 0)
+(defvar +red+ (make-array '(3)))
+(setf (aref +red+ 0) 255)
+(setf (aref +red+ 1) 0)
+(setf (aref +red+ 2) 0)
+(defvar +yellow+ (make-array '(3)))
+(setf (aref +yellow+ 0) 255)
+(setf (aref +yellow+ 1) 255)
+(setf (aref +yellow+ 2) 0)
+(defvar +green+ (make-array '(3)))
+(setf (aref +green+ 0) 0)
+(setf (aref +green+ 1) 255)
+(setf (aref +green+ 2) 0)
+(defvar +cyan+ (make-array '(3)))
+(setf (aref +cyan+ 0) 0)
+(setf (aref +cyan+ 1) 255)
+(setf (aref +cyan+ 2) 255)
+(defvar +blue+ (make-array '(3)))
+(setf (aref +blue+ 0) 0)
+(setf (aref +blue+ 1) 0)
+(setf (aref +blue+ 2) 255)
+(defvar +magenta+ (make-array '(3)))
+(setf (aref +magenta+ 0) 255)
+(setf (aref +magenta+ 1) 0)
+(setf (aref +magenta+ 2) 255)
+(defvar +white+ (make-array '(3)))
+(setf (aref +white+ 0) 255)
+(setf (aref +white+ 1) 255)
+(setf (aref +white+ 2) 255)
+(defvar +default-foreground+ (make-array '(3)))
+(setf (aref +default-foreground+ 0) 0)
+(setf (aref +default-foreground+ 1) 0)
+(setf (aref +default-foreground+ 2) 0)
+(defvar +default-background+ (make-array '(3)))
+(setf (aref +default-background+ 0) 255)
+(setf (aref +default-background+ 1) 255)
+(setf (aref +default-background+ 2) 255)
 
-(defvar *position* (list +upper-left+ +upper-middle+ +upper-right+ +middle-left+ +middle-central+ +middle-right+ +lower-left+ +lower-middle+ +lower-right+))
+;; Characters Style Attributes
+(cffi:defcenum attribute
+  (:none #x00)
+  (:bold #x01)
+  (:dim #x02)
+  (:italic #x04)
+  (:underline #x08)
+  (:blink #x10)
+  (:reverse #x20)
+  (:hidden #x40))
 
-(defconstant +sheet-none+ 95)
-(defconstant +sheet-bust+ 98)
+;; Neko Default Placements into the display screen
+(cffi:defcenum cardinal
+  :upper-left
+  :upper-middle
+  :upper-right
+  :middle-left
+  :middle-central
+  :middle-right
+  :lower-left
+  :lower-middle
+  :lower-right)
 
-(defvar *sheet* (list +sheet-none+ +sheet-bust+))
+;; Neko's Postures
+(cffi:defcenum sheet
+  (:none 95)
+  (:bust 98))
 
-(defconstant +part-none+ 95)
-(defconstant +part-arm-left+ 97)
-(defconstant +part-arm-right+ 65)
-(defconstant +part-boobs+ 98)
-(defconstant +part-clavicle+ 99)
-(defconstant +part-ear-left+ 101)
-(defconstant +part-ear-right+ 69)
-(defconstant +part-eye-left+ 121)
-(defconstant +part-eye-right+ 89)
-(defconstant +part-hair-top+ 111)
-(defconstant +part-hair-left+ 114)
-(defconstant +part-hair-right+ 82)
-(defconstant +part-hand-left+ 100)
-(defconstant +part-hand-right+ 68)
-(defconstant +part-mouth+ 109)
-(defconstant +part-tail+ 116)
-(defconstant +part-bell+ 108)
-(defconstant +part-exclamation-mark+ 120)
-(defconstant +part-exclamation-marks+ 88)
-(defconstant +part-heart+ 104)
-(defconstant +part-hearts+ 72)
-(defconstant +part-lantern+ 110)
-(defconstant +part-question-mark+ 113)
-(defconstant +part-question-marks+ 81)
-(defconstant +part-wool-ball+ 119)
+;; Neko's Body Parts and Accessories
+(cffi:defcenum part
+  (:none 95)
+  (:arm-left 97)
+  (:arm-right 65)
+  (:boobs 44)
+  (:clavicle 99)
+  (:ear-left 101)
+  (:ear-right 69)
+  (:eye-left 121)
+  (:eye-right 89)
+  (:hair-top 111)
+  (:hair-left 114)
+  (:hair-right 82)
+  (:hand-left 100)
+  (:hand-right 68)
+  (:mouth 109)
+  (:tail 116)
+  (:bell 108)
+  (:exclamation-mark 120)
+  (:exclamation-marks 88)
+  (:heart 104)
+  (:hearts 72)
+  (:lantern 110)
+  (:question-mark 113)
+  (:question-marks 81)
+  (:wool-ball 119))
 
-(defvar *part* (list +part-none+ +part-arm-left+ +part-arm-right+ +part-boobs+ +part-clavicle+ +part-ear-left+ +part-ear-right+ +part-eye-left+ +part-eye-right+ +part-hair-top+ +part-hair-left+ +part-hair-right+ +part-hand-left+ +part-hand-right+ +part-mouth+ +part-tail+ +part-bell+ +part-exclamation-mark+ +part-exclamation-marks+ +part-heart+ +part-hearts+ +part-lantern+ +part-question-mark+ +part-question-marks+ +part-wool-ball+ ))
+;; Neko's Emotions
+(cffi:defcenum emotion
+  (:none 95)
+  (:angry 97)
+  (:happy 104)
+  (:love 108)
+  (:malicious 109)
+  (:misunderstanding 105)
+  (:shocked 111)
+  (:sleepy 115)
+  (:speechless 101))
 
-(defconstant +emotion-none+ 95)
-(defconstant +emotion-angry+ 97)
-(defconstant +emotion-happy+ 104)
-(defconstant +emotion-love+ 108)
-(defconstant +emotion-malicious+ 109)
-(defconstant +emotion-misunderstanding+ 105)
-(defconstant +emotion-shocked+ 111)
-(defconstant +emotion-sleepy+ 115)
-(defconstant +emotion-speechless+ 101)
+;; Neko Placement Selection
+;(cffi:defcstruct position
+;  (:cardinal cardinal)
+;  (:cartesian (cffi:cffi-array '(2) :element-type 'unsigned-short)))
 
-(defvar *emotion* (list +emotion-none+ +emotion-angry+ +emotion-happy+ +emotion-love+ +emotion-malicious+ +emotion-misunderstanding+ +emotion-shocked+ +emotion-sleepy+ +emotion-speechless+))
-
-
-
+;; Neko's Texels Definition
 (cffi:defcstruct tuple
   (part :unsigned-char)
   (emotion :unsigned-char))
 
-(defstruct library-state
-  sheet
-  emotions
-  draws
-  position
-  cartesian
-  message
-  unmount)
+;; Display screen's Characters
+(cffi:defcstruct caractere
+  (part :unsigned-char))
+
+(cffi:defcstruct library-state
+  (:sheet sheet))
+
+;Unitary test for library-state
+;(cffi:with-foreign-object (ptr '(:struct library-state))
+;  (print (cffi:foreign-slot-pointer ptr '(:struct library-state) :sheet)))
 
 (sb-ext:exit)
-
-;#[no_mangle]
-;pub unsafe extern "C" fn start(state: *mut LibraryState, _: *mut libc::c_void) {
-;    if let Some(mut state) = state.as_mut() {
-;        state.sheet = Sheet::Bust;
-;        libc::memcpy(
-;            state.message.as_mut_ptr() as *mut libc::c_void,
-;            b"hello".as_ptr() as *const libc::c_void,
-;            5
-;        );
-;    }
-;    libc::write(1, b"hell5\n".as_ptr() as *const libc::c_void, 6);
-;}
-
-;#[lang = "eh_personality"] extern fn rust_eh_personality() {}
-;#[lang = "panic_fmt"] extern fn rust_begin_panic() -> ! { loop {} }
