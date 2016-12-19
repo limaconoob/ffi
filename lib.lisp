@@ -119,21 +119,39 @@
   (:speechless 101))
 
 ;; Neko Placement Selection
-;(cffi:defcstruct position
-;  (:cardinal cardinal)
-;  (:cartesian (cffi:cffi-array '(2) :element-type 'unsigned-short)))
+(cffi:defcstruct _position_
+  (:cardinal cardinal)
+  (cartesian (:array :unsigned-short 2)))
+
+;;(make-array size :element-type '(unsigned-byte 8) :allocation :static-reclaimable))
+
+;;int func123(div_t * x,int **z[100],int y[][1000][10]);
+
+;;(:arguments (x (ffi:c-pointer div_t))
+;;(z (ffi:c-ptr (ffi:c-array (ffi:c-ptr (ffi:c-ptr ffi:int)) 100)))
+;;(y (ffi:c-ptr (ffi:c-ptr (ffi:c-array ffi:int (1000 10))))))
+
+;; unsigned short cartesian[2]; 
+;; (cffi:cffi-array '(2) :element-type 'unsigned-short)))
 
 ;; Neko's Texels Definition
-(cffi:defcstruct tuple
-  (part :unsigned-char)
-  (emotion :unsigned-char))
+(cffi:defcstruct _tuple_
+  (:part part)
+  (:emotion emotion))
 
 ;; Display screen's Characters
-(cffi:defcstruct caractere
-  (part :unsigned-char))
+(cffi:defcstruct _character_
+  (attribute :unsigned-char)
+  (foreground :unsigned-char) ;; unsigned char foreground[3];
+  (background :unsigned-char) ;; unsigned char background[3];
+  (glyph :int))
 
-(cffi:defcstruct library-state
-  (:sheet sheet))
+(cffi:defcstruct _library-state_
+  (:sheet sheet)
+;;  (:)
+  (:pointer (:struct _position_))
+;;  (:)
+  (unmount :unsigned-char))
 
 ;Unitary test for library-state
 ;(cffi:with-foreign-object (ptr '(:struct library-state))
